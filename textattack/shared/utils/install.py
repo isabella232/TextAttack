@@ -140,14 +140,18 @@ if sys.stdout.isatty():
 else:
     LOG_STRING = "textattack"
 logger = logging.getLogger(__name__)
-logging.config.dictConfig(
-    {"version": 1, "loggers": {__name__: {"level": logging.INFO}}}
-)
-formatter = logging.Formatter(f"{LOG_STRING}: %(message)s")
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-logger.addHandler(stream_handler)
-logger.propagate = False
+
+if len(logger.handlers) == 0:
+    # configure logger only if it is not configured yet
+    # to avoid overriding any application-configured loggers that import this module
+    logging.config.dictConfig(
+        {"version": 1, "loggers": {__name__: {"level": logging.INFO}}}
+    )
+    formatter = logging.Formatter(f"{LOG_STRING}: %(message)s")
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
+    logger.propagate = False
 
 
 def _post_install():
